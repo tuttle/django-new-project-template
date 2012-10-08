@@ -1,0 +1,25 @@
+My personal template for project based on Django web framework with a sensible
+set of default settings, pip requirements and other nice to haves.
+
+Create your new project env with a single command.
+
+The startproject script is able to setup a new Django-based project for you.
+Say you want to start works on a not-yet-existing project called djangoproject.
+Run these:
+
+  $ cd /path/to/project/parent/directory
+  $ ../path/to/django-new-project-template/startproject djangoproject
+
+The script will
+
+  * copy the Django project template,
+  * rename dirs and identifiers to djangoproject,
+  * generate and set the SECRET_KEY and database password,
+
+then the script will ask and optionally
+
+  * init the new git repositury & create the first commit,
+  * setup the virtualenv,
+  * install the required packages except Django.
+
+You will also get hints about how to continue.

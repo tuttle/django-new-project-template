@@ -1,0 +1,70 @@
+{% load i18n freshstatic %}<!DOCTYPE html>
+<html>
+	<head>
+		<title>{% block title %}My Project{% endblock %}</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<link rel="stylesheet" type="text/css" href="{% freshstatic "css/reset.css" %}" />
+		<!--[if lt IE 9]><script src="{% freshstatic "js/html5.js" %}"></script><![endif]-->
+		{% block extra-head %}{% endblock %}
+	</head>
+	<body>
+		<div id="header">
+			<div id="usermenu">
+				<span id="langsel">
+					<form action="/i18n/setlang/" method="POST">{% csrf_token %}
+						<input name="next" type="hidden" value="{{ request.path }}" />
+
+						{% if LANGUAGE_CODE == "cs" %}
+						<input name="language" type="hidden" value="en" />
+						<input type="image" src="{% freshstatic "img/flag-us.gif" %}" alt="En" border="0" style="border: 0px"
+								title="{% trans "Click here to switch to English." %}" />
+						{% else %}
+						<input name="language" type="hidden" value="cs" />
+						<input type="image" src="{% freshstatic "img/flag-cs.gif" %}" alt="Cz" border="0" style="border: 0px"
+								title="{% trans "Click here to switch to Czech." %}"/>
+						{% endif %}
+					</form>
+				</span>
+
+				{% if user.is_authenticated %}
+				| {% trans "User" %} <strong>{{ user.get_full_name }}</strong>
+					({{ user.username }})
+				| <a href="{% url 'logout' %}">{% trans "Log out" %}</a>
+				{% endif %}
+			</div>
+		</div>
+
+		<div id="menu">
+			<a href="{% url 'home' %}">{% trans "Home" %}</a>
+			{% if user.is_authenticated %}
+				{% if user.is_staff %}
+					<a href="{% url 'admin:index' %}">{% trans "Admin" %}</a>
+				{% endif %}
+			{% endif %}
+		</div>
+
+		{% if messages %}
+		<div id="messagelist">
+			{% for message in messages %}
+			<div class="{{ message.tags }}">{{ message }}</div>
+			{% endfor %}
+		</div>
+		{% endif %}
+
+		<div id="main">
+			<div id="content">
+				{% block content %}
+				{{ content }}
+				{% endblock %}
+			</div> <!-- #content -->
+		</div> <!-- #main -->
+
+		{% block footer %}
+		<div id="footer">
+		</div>
+		{% endblock %}
+	</body>
+
+	{% block js %}{% endblock %}
+</html>

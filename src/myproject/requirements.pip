@@ -1,0 +1,12 @@
+# This file collects all required third-party applications that are needed
+# to run this project. Later you can install all these apps in a row
+# using pip. Example::
+#
+#     pip install -U -r requirements.pip
+
+# STABLE PACKAGES
+django==1.4.1
+django-debug-toolbar==0.9.4
+django-extensions==0.8
+south==0.7.4
+git+git://github.com/tuttle/python-useful.git

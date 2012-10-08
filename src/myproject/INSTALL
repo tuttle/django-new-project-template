@@ -1,0 +1,97 @@
+HOW TO INSTALL THE PROJECT
+==========================
+
+Install the requirements (on Debian-like linux):
+
+	# aptitude install python-virtualenv python-psycopg2 git python-imaging
+
+WSGI is the current mainstream method for running Django projects.
+
+	# aptitude install libapache2-mod-wsgi    # Not required for development.
+
+Create the project root directory, also the root for its virtualenv.
+Replace /opt/myproject with whatever tree you develop locally like
+~/prog/myproject.
+
+	# mkdir /opt/myproject
+	# cd /opt/myproject
+
+Clone the repository into the new `src/myproject' subdirectory:
+
+	[/opt/myproject]# git clone [path/to/repo]/myproject.git src/myproject
+
+Create the virtualenv:
+
+	[/opt/myproject]$ virtualenv .
+
+Install the required software like Django, South etc.:
+
+	[/opt/myproject]$ ./bin/pip -E. install -U -r src/myproject/requirements.pip
+
+Install the Python package `myproject' into the VE just as
+link to its checked out source:
+
+	[/opt/myproject]$ cd src/myproject
+	[/opt/myproject/src/myproject]$ ../../bin/python setup.py develop
+
+Clone the installation-specific settings and customize them (see comments inside):
+
+	[/opt/myproject/src/myproject]$ cp -v myproject/conf/local/example/*.py \
+	                                      myproject/conf/local/
+	[/opt/myproject/src/myproject]$ edit myproject/conf/local/settings.py
+
+Create the PostgreSQL database:
+
+	# su -c psql postgres
+	postgres=# CREATE ROLE myproject LOGIN ENCRYPTED PASSWORD 'new password';
+	postgres=# CREATE DATABASE "myproject" WITH ENCODING='UTF8' LC_COLLATE='en_US.UTF-8' LC_CTYPE='en_US.UTF-8' OWNER=myproject TEMPLATE template0;
+                             ^^^ This command works on PostgreSQL 8.4
+
+Let Django create + migrate its tables:
+
+	[/opt/myproject/src/myproject]$ cd ../..
+	[/opt/myproject]$ ./bin/manage.py syncdb
+	[/opt/myproject]$ ./bin/manage.py migrate
+
+Install required fixtures (if they exist):
+
+	[/opt/myproject]$ ./bin/manage.py loaddata src/myproject/initial_fixtures.json
+
+Install the required locales to the system:
+
+	Find the used locales in project_settings.LOCALE_MAP.
+
+	On Debian: Run `dpkg-reconfigure locales' and pick the locales to generate.
+
+	On Ubuntu: Find the locales to generate in /usr/share/i18n/SUPPORTED
+	and add these lines (whole lines!) into /var/lib/locales/supported.d/local.
+	Then run `dpkg-reconfigure locales`.
+
+	On other systems: Use your admin-fu. May the force be with you.
+
+
+HOW TO UPGRADE THE PROJECT
+==========================
+
+When the new version is available in the upstream git repository,
+do the following to update your installation.
+
+Fetch and merge new source commits:
+
+	# cd /opt/myproject/src/myproject
+	[/opt/myproject/src/myproject]# git pull
+	[/opt/myproject/src/myproject]# cd ../..
+
+If src/myproject/requirements.pip changed:
+
+	[/opt/myproject]$ ./bin/pip -E. install -U -r src/myproject/requirements.pip
+
+If any models.py file or /migrations/ directory changed:
+
+	[/opt/myproject]# ./bin/manage syncdb
+	[/opt/myproject]# ./bin/manage migrate
+
+Review the project and local/example settings for configuration changes.
+
+There's no need to restart/reload Apache, usually it's enough to touch
+the file pointed to by the WSGIScriptAlias directive in the Apache conf.

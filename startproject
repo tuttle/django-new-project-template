@@ -1,0 +1,113 @@
+#!/bin/bash
+
+# NOTE: THIS SCRIPT WAS DEVELOPED AND TESTED ON LINUX.
+#
+# See the README for some details.
+#
+
+set -e	# Stop script on first error.
+
+TEMPLATE_DIR="`dirname $0`/src/myproject"
+
+if [ ! -d "$TEMPLATE_DIR" ]; then
+	echo "$0: Cannot find template in $TEMPLATE_DIR"
+	exit 1
+fi
+
+PROJECT_IDENT="$1"
+
+if [ ! "$PROJECT_IDENT" ]; then
+	echo "$0: Please supply the Python identifier of the new project."
+	exit 2
+fi
+
+if [ -e "$PROJECT_IDENT" ]; then
+	echo "$0: '$PROJECT_IDENT' already exists in current directory."
+	exit 3
+fi
+
+mkdir -v -p "$PROJECT_IDENT"/src
+
+# For cd to stop echoing.
+unset CDPATH
+
+cd "$PROJECT_IDENT"/src
+
+echo "cp: Recursive copy."
+cp -r "$TEMPLATE_DIR" .
+find -type f \( -name '*.pyc' -o -name '*~' \) -delete
+
+cp -v myproject/myproject/conf/local_settings_example.py \
+      myproject/myproject/conf/local_settings.py
+
+SECRET_KEY="`python -c "import random; print ''.join(random.choice('abcdefghijklmnopqrstuvwxyz0123456789') for i in xrange(60)),"`"
+echo "Setting SECRET_KEY"
+sed -i -e"s#installation secret key#$SECRET_KEY#" myproject/myproject/conf/local_settings.py
+
+DB_PASSWORD="`python -c "import random; print ''.join(random.choice('abcdefghijklmnopqrstuvwxyz0123456789') for i in xrange(10)),"`"
+echo "Setting db password"
+sed -i -e"s#installation database password#$DB_PASSWORD#" myproject/myproject/conf/local_settings.py
+
+echo
+echo "Run this as the PostgreSQL DBA:"
+echo "CREATE ROLE $PROJECT_IDENT LOGIN ENCRYPTED PASSWORD '$DB_PASSWORD';"
+echo "CREATE DATABASE $PROJECT_IDENT WITH ENCODING='UTF8' LC_COLLATE='en_US.UTF-8' LC_CTYPE='en_US.UTF-8' OWNER=$PROJECT_IDENT TEMPLATE template0;"
+echo
+
+if [ "$PROJECT_IDENT" != myproject ]; then
+	echo "Renaming:"
+	mv -v myproject/myproject myproject/"$PROJECT_IDENT"
+	mv -v myproject "$PROJECT_IDENT"
+
+	find -type f | xargs grep -l -F myproject | xargs sed -i -e "s#myproject#$PROJECT_IDENT#g"
+fi
+
+cd ..
+
+echo
+read -p"Do you want to run git init? [y] " ANS
+if [ "$ANS" != "n" ]; then
+	cd src/"$PROJECT_IDENT"
+	git init
+
+	echo
+	read -p"Do you want the initial commit? [y] " ANS
+	if [ "$ANS" != "n" ]; then
+		git add .
+		git commit -m "Initial commit based on django-new-project-template."
+	fi
+
+	cd ../..
+fi
+
+echo
+read -p"Do you want to setup the virtualenv? [y] " ANS
+if [ "$ANS" != "n" ]; then
+	virtualenv .
+	cd src/"$PROJECT_IDENT"
+	echo
+	../../bin/python setup.py develop
+	cd ../..
+
+	echo
+	PACKAGES="`grep -E -v '^(\s*$|#|django=)' src/$PROJECT_IDENT/requirements.pip | tr '\n' ' '`"
+	read -p "Do you want to install packages $PACKAGES ? [y] " ANS
+	if [ "$ANS" != "n" ]; then
+		./bin/pip -E . install $PACKAGES
+
+		echo
+		echo "Django itself was not installed because you may want to develop on your"
+		echo "central Django installation (e.g. based on a ramdisk)."
+		echo "So install Django the way you like. The easiest is now to run:"
+		echo
+		echo "./$PROJECT_IDENT/bin/pip install django"
+		echo
+	fi
+fi
+
+echo "Now create a role and database as instructed above, then run"
+echo
+echo "./$PROJECT_IDENT/bin/manage.py syncdb"
+echo
+echo "and you can start to develop right away."
+echo

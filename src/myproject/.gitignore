@@ -1,0 +1,4 @@
+*~
+*.pyc
+*.egg-info
+myproject/conf/local_settings.py
