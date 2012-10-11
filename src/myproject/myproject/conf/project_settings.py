@@ -33,7 +33,7 @@ ADMINS = (DEVELOPER,)
 
 TIME_ZONE = 'Europe/Prague'
 
-# TODO: No timezone support temporarily (hopefully), Postgres gives us no
+# TODO: No timezone support for now, Postgres gives us no
 # need for data migration when turned on later.
 USE_TZ = False
 
@@ -183,6 +183,5 @@ INSTALLATIONS = {
 
         DEFAULT_FROM_EMAIL = DEVELOPER_EMAIL,
         SERVER_EMAIL = DEVELOPER_EMAIL,
-        EMAIL_HOST = '10.201.0.1',
     ),
 }

@@ -36,9 +36,9 @@ link to its checked out source:
 
 Clone the installation-specific settings and customize them (see comments inside):
 
-	[/opt/myproject/src/myproject]$ cp -v myproject/conf/local/example/*.py \
-	                                      myproject/conf/local/
-	[/opt/myproject/src/myproject]$ edit myproject/conf/local/settings.py
+	[/opt/myproject/src/myproject]$ cp -v myproject/conf/local_settings_example.py \
+	                                      myproject/conf/local_settings.py
+	[/opt/myproject/src/myproject]$ edit myproject/conf/local_settings.py
 
 Create the PostgreSQL database:
 
