@@ -7,6 +7,6 @@
 # STABLE PACKAGES
 django==1.4.1
 django-debug-toolbar==0.9.4
-django-extensions==0.8
-south==0.7.4
+django-extensions==0.9
+south==0.7.6
 git+git://github.com/tuttle/python-useful.git
