@@ -5,6 +5,10 @@ Install the requirements (on Debian-like linux):
 
 	# aptitude install python-virtualenv python-psycopg2 git python-imaging
 
+The Django project is probably using memcached, so:
+
+	# aptitude install memcached python-memcache
+
 WSGI is the current mainstream method for running Django projects.
 
 	# aptitude install libapache2-mod-wsgi    # Not required for development.

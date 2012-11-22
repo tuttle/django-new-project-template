@@ -68,7 +68,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'useful.django.cached_auth.CachedAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
@@ -121,6 +121,17 @@ ACCOUNT_ACTIVATION_DAYS = 7
 #AUTH_PROFILE_MODULE = 'some-app.UserProfile'
 
 #AUTHENTICATION_BACKENDS = ('useful.django.auth.EmailLoginModelBackend',)
+
+#CACHES = {
+#    'default': {
+#        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+#        'LOCATION': '127.0.0.1:11211',
+#        'TIMEOUT': 60*60*24*7,
+#        'KEY_PREFIX': PROJECT_IDENT,
+#    }
+#}
+
+#SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
