@@ -63,7 +63,7 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
-###    'useful.django.remote_addr.SetRemoteAddrFromForwardedFor',
+###    'useful.django.remote_addr.SetRemoteAddrMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
