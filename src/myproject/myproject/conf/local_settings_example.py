@@ -18,6 +18,9 @@ SECRET_KEY = 'installation secret key'
 
 #EMAIL_HOST = '10.201.0.1'
 
+if INSTALLATION_TYPE != 'devel':
+    # Make all templates to be cached in memory. Server will need to be reloaded on template change.
+    TEMPLATE_LOADERS = (('django.template.loaders.cached.Loader', TEMPLATE_LOADERS),)
 
 import os
 

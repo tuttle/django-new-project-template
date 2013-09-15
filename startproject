@@ -7,7 +7,9 @@
 
 set -e	# Stop script on first error.
 
-TEMPLATE_DIR="`dirname $0`/src/myproject"
+SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
+
+TEMPLATE_DIR="$SCRIPT_PATH/src/myproject"
 
 if [ ! -d "$TEMPLATE_DIR" ]; then
 	echo "$0: Cannot find template in $TEMPLATE_DIR"
@@ -54,6 +56,9 @@ echo "CREATE ROLE $PROJECT_IDENT LOGIN ENCRYPTED PASSWORD '$DB_PASSWORD';"
 echo "CREATE DATABASE $PROJECT_IDENT WITH ENCODING='UTF8' LC_COLLATE='en_US.UTF-8' LC_CTYPE='en_US.UTF-8' OWNER=$PROJECT_IDENT TEMPLATE template0;"
 echo
 
+read -p"Can we continue? [Enter] "
+echo
+
 if [ "$PROJECT_IDENT" != myproject ]; then
 	echo "Renaming:"
 	mv -v myproject/myproject myproject/"$PROJECT_IDENT"
@@ -81,19 +86,23 @@ if [ "$ANS" != "n" ]; then
 fi
 
 echo
-read -p"Do you want to setup the virtualenv? [y] " ANS
+read -p"Do you want to setup the virtualenv? Answering 's' will be like 'y', but adds --system-site-packages option. [s] " ANS
 if [ "$ANS" != "n" ]; then
-	virtualenv .
+	if [ "$ANS" != "y" ]; then
+		virtualenv --system-site-packages .
+	else
+		virtualenv .
+	fi
 	cd src/"$PROJECT_IDENT"
 	echo
 	../../bin/python setup.py develop
 	cd ../..
 
 	echo
-	PACKAGES="`grep -E -v '^(\s*$|#|django=)' src/$PROJECT_IDENT/requirements.pip | tr '\n' ' '`"
+	PACKAGES="`grep -E -v '^(\s*$|#|django[^\w-])' src/$PROJECT_IDENT/requirements.pip | tr '\n' ' '`"
 	read -p "Do you want to install packages $PACKAGES ? [y] " ANS
 	if [ "$ANS" != "n" ]; then
-		./bin/pip -E . install $PACKAGES
+		./bin/pip install $PACKAGES
 
 		echo
 		echo "Django itself was not installed because you may want to develop on your"
