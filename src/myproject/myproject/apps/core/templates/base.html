@@ -18,11 +18,11 @@
 						{% if LANGUAGE_CODE == "cs" %}
 						<input name="language" type="hidden" value="en" />
 						<input type="image" src="{% freshstatic "img/flag-us.gif" %}" alt="En" border="0" style="border: 0px"
-								title="{% trans "Click here to switch to English." %}" />
+								title="Click here to switch to English." />
 						{% else %}
 						<input name="language" type="hidden" value="cs" />
 						<input type="image" src="{% freshstatic "img/flag-cs.gif" %}" alt="Cz" border="0" style="border: 0px"
-								title="{% trans "Click here to switch to Czech." %}"/>
+								title="Chcete-li přepnout aplikaci do češtiny, klepněte zde." />
 						{% endif %}
 					</form>
 				</span>
